@@ -1,12 +1,7 @@
-\# 🌱 FarmWisely
-
-
-
+ FarmWisely
 AI-powered farming intelligence platform for yield prediction and soil analysis.
 
-
-
-\## 🚀 Features
+Features
 
 \- Crop yield prediction using ML
 
@@ -18,9 +13,7 @@ AI-powered farming intelligence platform for yield prediction and soil analysis.
 
 \- Privacy-preserving case storage
 
-
-
-\## 🛠️ Tech Stack
+Tech Stack
 
 \- Frontend: HTML, CSS, JavaScript
 
@@ -30,11 +23,7 @@ AI-powered farming intelligence platform for yield prediction and soil analysis.
 
 \- Database: MongoDB
 
-
-
-\## ⚙️ How to Run
-
-
+How to Run
 
 \### Backend
 
