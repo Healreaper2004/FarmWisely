@@ -1,45 +1,86 @@
-🌱 FarmWisely – AI-Powered Farming Intelligence Platform
+# 🌾 FarmWisely – AI-Powered Smart Farming System
 
-FarmWisely is an intelligent full-stack web application that helps farmers optimize crop yield using machine learning, soil fertility analysis, and sustainability metrics. It combines predictive modeling with agronomic insights to deliver real-time recommendations for better farming decisions.
+FarmWisely is an intelligent decision-support system that helps farmers optimise crop yield using AI-driven predictions, soil fertility analysis (CSFI), and rule-based agronomic recommendations.
 
-🚀 Features
+It combines Machine Learning, sustainability metrics, and privacy-preserving data processing to deliver actionable insights for modern agriculture.
 
-🌾 Core Capabilities
+---
 
-📊 ML-Based Yield Prediction – Predict crop yield using trained machine learning model based on farm conditions  
-🧪 CSFI Calculator (Soil Fertility Index) – Compute soil fertility using 12 nutrients (macro + micro)  
-🌿 Smart Fertilizer Recommendations – Rule-based fertilizer suggestions based on crop, soil, and season  
-💧 Water Usage Strategy – Optimized irrigation recommendations  
-🔁 Crop Rotation Suggestions – Intelligent next crop recommendations for sustainable farming  
-📈 Sustainability Metrics – Advanced analytics for farm efficiency  
+## 🚀 Features
 
-📊 Metrics Explained
+### 🌿 Core Capabilities
 
-Metric	Description
-WPI (Water Productivity Index)	Yield per unit water used
-NES (Nutrient Efficiency Score)	Yield per soil fertility unit (CSFI)
-III (Input Intensity Index)	Input load per acre (fertilizer + pesticide)
-SRS (Sustainability Risk Score)	Environmental risk based on inputs
+* 📊 **Yield Prediction (ML Model)** – Predicts crop yield based on farm inputs
+* 🌱 **CSFI (Soil Fertility Index)** – Quantifies soil health on a scale of 0–1
+* 🧠 **Smart Recommendations Engine** – Suggests fertilizer, irrigation, and crop rotation
+* 📈 **Advanced Farm Metrics**
 
-🧠 Tech Stack
+  * WPI – Water Productivity Index
+  * NES – Nutrient Efficiency Score
+  * III – Input Intensity Index
+  * SRS – Sustainability Risk Score
+* 🔐 **Privacy-Preserving Pipeline**
 
-Frontend: HTML5, CSS3, JavaScript (interactive UI + CSFI calculator)  
-Backend: Python (Flask REST API)  
-ML Model: Scikit-learn pipeline (trained on agronomic dataset)  
-Database: MongoDB (case storage + analytics)  
-Architecture: Modular full-stack system (frontend + backend + DB)  
+  * Removes personal data
+  * Generalises sensitive values into safe ranges
+* 📦 **Case-Based Storage** – Stores anonymised farm cases in MongoDB
 
-🆕 Key Highlights (2025 Version)
+---
 
-🧪 CSFI Integration: Soil fertility modeled using 12 nutrients with weighted scoring  
-📊 Explainable Metrics: WPI, NES, III, SRS provide transparency beyond prediction  
-🔐 Privacy-Aware Storage: Farmer data anonymized before storing cases  
-⚙️ Rule + ML Hybrid System: Combines machine learning predictions with domain rules  
-🌍 Realistic Agronomic Modeling: Yield influenced by farm area, water, and soil conditions  
+## 🧠 Tech Stack
 
-⚙️ Getting Started (Local Setup)
+* **Frontend**: HTML5, CSS3, JavaScript
+* **Backend**: Python (Flask REST API)
+* **Machine Learning**: Scikit-learn / Regression Model
+* **Database**: MongoDB Atlas
+* **Architecture**: Modular (Rules + Metrics + Privacy + Case Engine)
 
-# 1. Clone the repository
+---
+
+## 🆕 Key Innovations
+
+* 🌱 **CSFI-Based Fertility Modeling** (0–1 scale)
+* 📊 **Post-Prediction Metrics Layer** (separate from ML)
+* 🧠 **Explainable AI Output via Metrics**
+* 🔐 **Built-in Data Anonymization**
+* ⚙️ **Rule-Based + ML Hybrid System**
+
+---
+
+## 🧮 What is CSFI?
+
+**CSFI (Composite Soil Fertility Index)** combines multiple soil nutrients into a single score between **0 and 1**.
+
+| Range       | Interpretation |
+| ----------- | -------------- |
+| 0 – 0.30    | Poor           |
+| 0.30 – 0.60 | Moderate       |
+| 0.60 – 0.80 | Good           |
+| 0.80 – 1.00 | Excellent      |
+
+👉 FarmWisely includes a built-in **CSFI Calculator UI** to help users compute this easily.
+
+---
+
+## 🧪 Example Workflow
+
+1. Enter farm details (crop, soil, irrigation, etc.)
+2. Calculate or input CSFI
+3. Click **Predict Yield**
+4. Get:
+
+   * Predicted yield
+   * Fertility status
+   * Recommendations
+   * Sustainability metrics
+   * Next crop suggestion
+
+---
+
+## ⚙️ Getting Started (Local Setup)
+
+```bash
+# 1. Clone repository
 git clone https://github.com/Healreaper2004/FarmWisely.git
 cd FarmWisely
 
@@ -47,68 +88,104 @@ cd FarmWisely
 python -m venv venv
 venv\Scripts\activate   # Windows
 # or
-source venv/bin/activate   # macOS/Linux
+source venv/bin/activate  # Mac/Linux
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Add environment variables
+# 4. Add MongoDB URI
 # Create a .env file and add:
 MONGO_URI=your_mongodb_connection_string
 
 # 5. Run backend
 python -m backend.app
+```
 
-# 6. Open frontend
-Open frontend/index.html in browser
+---
 
-🤀 File Structure
+## 🌐 Run Application
 
+* Backend: http://127.0.0.1:5000
+* Frontend: Open `frontend/index.html` in browser
+
+---
+
+## 📁 File Structure
+
+```text
 FarmWisely/
 │
 ├── backend/
 │   ├── app.py                  # Flask API
 │   ├── rules/                  # Fertilizer + recommendation logic
-│   ├── services/               # Metrics + utilities
-│   ├── privacy/                # Anonymization logic
-│   ├── case_engine/            # Case builder
+│   ├── services/               # Metrics computation
+│   ├── privacy/                # Anonymization engine
+│   ├── case_engine/            # Case builder (Mongo storage)
 │
 ├── frontend/
 │   ├── index.html              # Main UI
 │   ├── style.css               # Styling
-│   ├── script.js               # Frontend logic + CSFI calculator
-│   └── hero.jpg                # UI assets
+│   ├── script.js               # Logic + CSFI calculator
+│   └── hero.jpg                # UI image
 │
 ├── db/
 │   └── mongo.py                # MongoDB connection
 │
 ├── requirements.txt
 └── README.md
+```
 
-🔐 Environment Variables
+---
 
-Variable	Description
-MONGO_URI	MongoDB connection string
+## 📊 Metrics Explanation
 
-⚠️ Do NOT push .env file to GitHub
+* **WPI (Water Productivity Index)**
+  Yield per unit water used
 
-💻 Example Workflow
+* **NES (Nutrient Efficiency Score)**
+  Yield per unit soil fertility
 
-1. Enter farm details (crop, soil, irrigation, season)
-2. Calculate CSFI using soil nutrients OR enter manually
-3. Get predicted yield from ML model
-4. View sustainability metrics (WPI, NES, III, SRS)
-5. Receive fertilizer, irrigation, and crop rotation recommendations
-6. Case stored anonymously for future insights
+* **III (Input Intensity Index)**
+  Input usage per acre
 
-🌐 Future Enhancements
+* **SRS (Sustainability Risk Score)**
+  Measures environmental risk based on inputs
 
-📊 Dashboard for farm analytics and trends  
-🌍 Weather + region-based prediction integration  
-📱 Mobile-friendly progressive web app  
-🤖 AI chatbot for farming assistance  
-📡 Real-time advisory system for farmers  
+---
 
-👨‍💻 Author
+## 🔐 Privacy Design
 
-Ayush Arya
+FarmWisely ensures data safety through:
+
+* ❌ Removal of personal identifiers
+* 📉 Suppression of extreme values
+* 📊 Conversion into range buckets
+
+---
+
+## 💡 Key Insight (For Viva / Interview)
+
+* Yield is primarily influenced by:
+
+  * Farm Area (~49%)
+  * Water Usage (~28%)
+* CSFI contributes (~6%) → reflects soil health, not total production
+* Sustainability is captured via metrics (WPI, NES, SRS)
+
+---
+
+## 🌱 Future Enhancements
+
+* 📡 Weather API integration
+* 📊 Farmer dashboard analytics
+* 📱 Mobile app version
+* 🤖 AI chatbot for farm advisory
+
+---
+
+## 👨‍💻 Author
+
+**Ayush Arya**
+
+---
+
