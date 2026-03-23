@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FarmWisely</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="logo">🌱 FarmWisely</div>
+  <nav>
+    <a href="#features">Features</a>
+    <a href="#predict-section">How It Works</a>
+    <a href="#testimonials">Testimonials</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="nav-actions">
+    <a href="#predict-section" class="hero-cta nav-cta">Try It Free </a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <div class="hero-left">
+      <span class="hero-tag">🌾 AI-Powered Farming Intelligence</span>
+      <h1>
+        Grow Smarter<br>
+        with <span class="hero-accent">FarmWisely</span>
+      </h1>
+      <p class="hero-desc">
+        Get personalised yield predictions, soil fertility analysis and
+        crop recommendations — powered by machine learning trained on
+        real agronomic data.
+      </p>
+
+      <div class="hero-trust">
+        <div class="trust-item">
+          <span class="trust-icon">🧪</span>
+          <span>Soil Test → CSFI Score</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-icon">🤖</span>
+          <span>ML Yield Prediction</span>
+        </div>
+        <div class="trust-item">
+          <span class="trust-icon">📋</span>
+          <span>Personalised Recommendations</span>
+        </div>
+      </div>
+
+      <a class="hero-cta" href="#predict-section">
+        Try It Now — Free &nbsp;↓
+      </a>
+    </div>
+
+    <div class="hero-right">
+      <img src="hero.jpg" alt="Farmer holding soil" class="hero-img-small">
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stat-item">
+    <div class="stat-number">12</div>
+    <div class="stat-label">Soil Nutrients Analysed</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">4</div>
+    <div class="stat-label">Crops Supported</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">65%</div>
+    <div class="stat-label">Model Accuracy (R²)</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">2.48t</div>
+    <div class="stat-label">Mean Absolute Error</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <h2>Smart Features for Modern Farming</h2>
+  <p class="subtitle">Everything you need to make informed decisions</p>
+  <div class="feature-grid">
+    <div class="card"><h4>🌱 Crop Recommendations</h4><p>AI powered suggestions on what to plant and when.</p></div>
+    <div class="card"><h4>💧 Irrigation Management</h4><p>Optimize water usage with smart schedules.</p></div>
+    <div class="card"><h4>📈 Yield Forecasting</h4><p>Predict harvest outcomes using historical data.</p></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works">
+  <h2>How FarmWisely Works</h2>
+  <p>Three simple steps to transform your farming</p>
+  <div class="steps">
+    <div class="step"><span>1</span><h4>Calculate Your Soil Score</h4><p>Enter your soil test values to get your CSFI.</p></div>
+    <div class="step"><span>2</span><h4>Enter Farm Details</h4><p>Provide crop, irrigation and seasonal conditions.</p></div>
+    <div class="step"><span>3</span><h4>Get AI Insights</h4><p>Receive yield prediction and personalised recommendations.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     STEP 1 — CSFI CALCULATOR
+════════════════════════════════════════════════════════ -->
+<section class="csfi-section" id="predict-section">
+
+  <div class="csfi-header">
+    <span class="step-badge">Step 1</span>
+    <h2>Calculate Your Soil Fertility Index (CSFI)</h2>
+    <p class="csfi-sub">
+      Enter your soil test report values below. Your CSFI score is
+      calculated instantly and auto-filled into the prediction form.
+    </p>
+  </div>
+
+  <div class="csfi-explainer">
+    <div class="csfi-explainer-icon">🧪</div>
+    <div class="csfi-explainer-text">
+      <strong>What is CSFI?</strong> The Composite Soil Fertility Index combines
+      all 12 nutrients from your soil test report into a single score from
+      <strong>0 to 1</strong>. It tells the AI how fertile your soil is before
+      making a yield prediction.
+    </div>
+    <div class="csfi-scale">
+      <span class="scale-pill poor">0–0.30<br><small>Poor</small></span>
+      <span class="scale-pill moderate">0.30–0.60<br><small>Moderate</small></span>
+      <span class="scale-pill good">0.60–0.80<br><small>Good</small></span>
+      <span class="scale-pill excellent">0.80–1.0<br><small>Excellent</small></span>
+    </div>
+  </div>
+
+  <div class="csfi-calculator">
+
+    <div class="nutrient-group">
+      <div class="nutrient-group-label">
+        <span class="ndot primary"></span>
+        Primary Macronutrients
+        <span class="nweight">Weight 50%</span>
+      </div>
+      <div class="ninputs three-col">
+        <div class="nfield">
+          <label>N — Nitrogen <span class="nunit">mg/kg</span></label>
+          <input type="number" id="n_val" min="0" step="0.1" placeholder="e.g. 45" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>P — Phosphorus <span class="nunit">mg/kg</span></label>
+          <input type="number" id="p_val" min="0" step="0.1" placeholder="e.g. 22" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>K — Potassium <span class="nunit">mg/kg</span></label>
+          <input type="number" id="k_val" min="0" step="0.1" placeholder="e.g. 180" oninput="calculateCSFI()">
+        </div>
+      </div>
+    </div>
+
+    <div class="nutrient-group">
+      <div class="nutrient-group-label">
+        <span class="ndot secondary"></span>
+        Secondary Macronutrients
+        <span class="nweight">Weight 30%</span>
+      </div>
+      <div class="ninputs three-col">
+        <div class="nfield">
+          <label>Ca — Calcium <span class="nunit">mg/kg</span></label>
+          <input type="number" id="ca_val" min="0" step="0.1" placeholder="e.g. 1200" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>Mg — Magnesium <span class="nunit">mg/kg</span></label>
+          <input type="number" id="mg_val" min="0" step="0.1" placeholder="e.g. 180" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>S — Sulphur <span class="nunit">mg/kg</span></label>
+          <input type="number" id="s_val" min="0" step="0.1" placeholder="e.g. 12" oninput="calculateCSFI()">
+        </div>
+      </div>
+    </div>
+
+    <div class="nutrient-group">
+      <div class="nutrient-group-label">
+        <span class="ndot micro"></span>
+        Micronutrients
+        <span class="nweight">Weight 20%</span>
+      </div>
+      <div class="ninputs six-col">
+        <div class="nfield">
+          <label>Zn — Zinc <span class="nunit">mg/kg</span></label>
+          <input type="number" id="zn_val" min="0" step="0.01" placeholder="e.g. 0.8" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>Fe — Iron <span class="nunit">mg/kg</span></label>
+          <input type="number" id="fe_val" min="0" step="0.01" placeholder="e.g. 4.5" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>Cu — Copper <span class="nunit">mg/kg</span></label>
+          <input type="number" id="cu_val" min="0" step="0.01" placeholder="e.g. 0.5" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>Mn — Manganese <span class="nunit">mg/kg</span></label>
+          <input type="number" id="mn_val" min="0" step="0.01" placeholder="e.g. 2.0" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>B — Boron <span class="nunit">mg/kg</span></label>
+          <input type="number" id="b_val" min="0" step="0.01" placeholder="e.g. 0.4" oninput="calculateCSFI()">
+        </div>
+        <div class="nfield">
+          <label>Mo — Molybdenum <span class="nunit">mg/kg</span></label>
+          <input type="number" id="mo_val" min="0" step="0.001" placeholder="e.g. 0.1" oninput="calculateCSFI()">
+        </div>
+      </div>
+    </div>
+
+    <div class="csfi-result-box" id="csfi-result-box">
+      <div class="csfi-score-col">
+        <div class="csfi-score-label">Your CSFI Score</div>
+        <div class="csfi-score-value" id="csfi-score-value">—</div>
+        <div class="csfi-score-class" id="csfi-score-class">Fill in all 12 values above</div>
+      </div>
+      <div class="csfi-bar-col">
+        <div class="csfi-bar-track">
+          <div class="csfi-bar-marker" id="csfi-bar-marker"></div>
+        </div>
+        <div class="csfi-bar-labels">
+          <span>0</span><span>0.30</span><span>0.60</span><span>0.80</span><span>1.0</span>
+        </div>
+      </div>
+      <button class="btn-primary csfi-use-btn" id="csfi-use-btn" onclick="useCSFI()" disabled>
+        ↓ Use in Prediction
+      </button>
+    </div>
+
+    <details class="csfi-ref">
+      <summary>📋 Don't have a soil test? See typical value ranges</summary>
+      <table class="ref-table">
+        <thead>
+          <tr><th>Nutrient</th><th>Low</th><th>Medium</th><th>High</th><th>Unit</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>N (Nitrogen)</td>    <td>&lt;25</td>   <td>25–50</td>    <td>&gt;50</td>   <td>mg/kg</td></tr>
+          <tr><td>P (Phosphorus)</td>  <td>&lt;10</td>   <td>10–25</td>    <td>&gt;25</td>   <td>mg/kg</td></tr>
+          <tr><td>K (Potassium)</td>   <td>&lt;110</td>  <td>110–280</td>  <td>&gt;280</td>  <td>mg/kg</td></tr>
+          <tr><td>Ca (Calcium)</td>    <td>&lt;500</td>  <td>500–1500</td> <td>&gt;1500</td> <td>mg/kg</td></tr>
+          <tr><td>Mg (Magnesium)</td>  <td>&lt;60</td>   <td>60–200</td>   <td>&gt;200</td>  <td>mg/kg</td></tr>
+          <tr><td>S (Sulphur)</td>     <td>&lt;5</td>    <td>5–20</td>     <td>&gt;20</td>   <td>mg/kg</td></tr>
+          <tr><td>Zn (Zinc)</td>       <td>&lt;0.5</td>  <td>0.5–1.5</td>  <td>&gt;1.5</td>  <td>mg/kg</td></tr>
+          <tr><td>Fe (Iron)</td>       <td>&lt;2</td>    <td>2–5</td>      <td>&gt;5</td>    <td>mg/kg</td></tr>
+          <tr><td>Cu (Copper)</td>     <td>&lt;0.2</td>  <td>0.2–0.8</td>  <td>&gt;0.8</td>  <td>mg/kg</td></tr>
+          <tr><td>Mn (Manganese)</td>  <td>&lt;1</td>    <td>1–3</td>      <td>&gt;3</td>    <td>mg/kg</td></tr>
+          <tr><td>B (Boron)</td>       <td>&lt;0.2</td>  <td>0.2–0.6</td>  <td>&gt;0.6</td>  <td>mg/kg</td></tr>
+          <tr><td>Mo (Molybdenum)</td> <td>&lt;0.05</td> <td>0.05–0.2</td> <td>&gt;0.2</td>  <td>mg/kg</td></tr>
+        </tbody>
+      </table>
+      <p class="ref-note">
+        💡 No soil test? Visit your nearest <strong>Krishi Vigyan Kendra (KVK)</strong>
+        or <strong>Soil Testing Laboratory</strong> for a free report.
+      </p>
+    </details>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     STEP 2 — FARM PREDICTION
+════════════════════════════════════════════════════════ -->
+<section class="prediction">
+  <span class="step-badge">Step 2</span>
+  <h2>Get Your Farm Prediction</h2>
+  <p>Enter your farm details to get AI-powered insights</p>
+
+  <div class="prediction-container">
+    <div class="prediction-form">
+
+      <select id="crop">
+        <option value="">Select Crop Type</option>
+        <option>Rice</option>
+        <option>Wheat</option>
+        <option>Maize</option>
+        <option>Soybean</option>
+      </select>
+
+      <select id="soil">
+        <option value="">Select Soil Type</option>
+        <option>Clayey</option>
+        <option>Loamy</option>
+        <option>Sandy</option>
+        <option>Silty</option>
+      </select>
+
+      <select id="irrigation">
+        <option value="">Select Irrigation Type</option>
+        <option>Drip</option>
+        <option>Manual</option>
+        <option>Rainfed</option>
+      </select>
+
+      <select id="season">
+        <option value="">Select Season</option>
+        <option>Kharif</option>
+        <option>Rabi</option>
+        <option>Zaid</option>
+      </select>
+
+      <input type="number" id="farmArea" min="0.1" step="0.1"
+        placeholder="Farm area (acres)" required />
+
+      <div class="csfi-field-wrap">
+        <input type="number" id="csfi" min="0" max="1" step="0.01"
+          placeholder="CSFI (auto-filled from Step 1, or enter manually)"
+          required />
+        <span class="csfi-field-hint">
+          ↑ Use the CSFI Calculator above, or enter a value between 0 and 1
+        </span>
+      </div>
+
+      <select id="pesticideUsed">
+        <option value="">Select Pesticide Usage</option>
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+      </select>
+
+      <input type="number" id="waterUsage" min="0" step="10"
+        placeholder="Water usage (m³ per season)" required />
+
+      <button id="predictBtn" class="btn-primary full" onclick="predictFarm()">
+        Predict Yield
+      </button>
+    </div>
+
+    <div id="prediction-result" class="prediction-result hidden"></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <h2>What Farmers Say</h2>
+  <div class="testimonial-grid">
+    <div class="testimonial">
+      <h4>Rajesh Kumar</h4>
+      <p class="role">Rice Farmer, Punjab</p>
+      <p>"FarmWisely helped increase my yield by 40%."</p>
+    </div>
+    <div class="testimonial">
+      <h4>Priya Sharma</h4>
+      <p class="role">Vegetable Farmer</p>
+      <p>"The soil fertility calculator made it so simple."</p>
+    </div>
+    <div class="testimonial">
+      <h4>Amit Patel</h4>
+      <p class="role">Maize Farmer, Gujarat</p>
+      <p>"Crop rotation advice improved my next season."</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <h2>Get In Touch</h2>
+  <form onsubmit="return false;">
+    <div class="row">
+      <input type="text" placeholder="Full Name">
+      <input type="email" placeholder="Email Address">
+    </div>
+    <input type="text" placeholder="Phone Number">
+    <textarea placeholder="Tell us about your farming needs"></textarea>
+    <button class="btn-primary full">Send Message</button>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 FarmWisely. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
