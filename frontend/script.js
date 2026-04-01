@@ -118,6 +118,20 @@ function useCSFI() {
 /* ═══════════════════════════════════════════════════════
    PREDICTION
 ════════════════════════════════════════════════════════ */
+function formatFertilizer(fert) {
+  if (!fert || !fert.quantity) return "N/A";
+
+  // If quantity is object → format nicely
+  if (typeof fert.quantity === "object") {
+    return Object.entries(fert.quantity)
+      .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+      .join("<br>");
+  }
+
+  // If string → return directly
+  return fert.quantity;
+}
+
 async function predictFarm() {
   const crop       = document.getElementById("crop").value;
   const soil       = document.getElementById("soil").value;
@@ -216,7 +230,8 @@ async function predictFarm() {
       <p><strong>CSFI:</strong> ${csfiNum.toFixed(2)} (${csfiLabel})</p>
 
       <h3>🌱 Fertilizer Recommendation</h3>
-      <p><strong>${fertilizer.name || "N/A"}</strong> — ${fertilizer.quantity || ""}</p>
+      <p><strong>${fertilizer.name || "N/A"}</strong></p>
+      <p>${formatFertilizer(fertilizer)}</p>
       <p><em>${fertilizer.timing || ""}</em></p>
 
       <h3>💧 Water Strategy</h3>

@@ -62,18 +62,16 @@ def get_fertilizer(crop_type, soil_type, season, csfi, irrigation_type=None):
     # 🌽 MAIZE
     # ─────────────────────────────────────────────
     elif crop_type == "maize":
-        qty = adjust_quantity(60)
-
         recommendation = {
-            "name":     "DAP + Urea",
-            "quantity": f"{qty} kg/acre",
-            "timing":   "Basal + knee-height stage",
-            "note":     "Ensure nitrogen availability during rapid growth phase"
+            "name": "DAP + Urea + MOP",
+            "quantity": {
+                "DAP": "60 kg/acre (basal)",
+                "Urea": "70 kg/acre (knee-height stage)",
+                "MOP": "25 kg/acre"
+            },
+            "timing": "Basal + knee-height stage",
+            "note": "Potassium improves cob development and stress resistance"
         }
-
-        if soil_type == "sandy":
-            recommendation["quantity"] = f"{adjust_quantity(70)} kg/acre"
-            recommendation["note"] += "; split application recommended to reduce leaching"
 
     # ─────────────────────────────────────────────
     # 🌾 WHEAT

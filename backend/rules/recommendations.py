@@ -1,18 +1,6 @@
 from backend.rules.nutrient_rules import get_nutrient_advisory
 
 def get_recommendations(data, predicted_yield, fertilizer, metrics, csfi=0.5):
-    """
-    Improved rule-based recommendation engine (agronomy-corrected)
-
-    Assumptions:
-      - Yield in tons (per acre or total — handled consistently upstream)
-      - Water usage in mm
-      - Metrics:
-            WPI → kg/mm
-            NES → kg yield per kg fertilizer
-            III → input intensity
-            SRS → 0–1 risk score
-    """
 
     recommendations = {}
 
@@ -22,21 +10,26 @@ def get_recommendations(data, predicted_yield, fertilizer, metrics, csfi=0.5):
     soil       = data["soil_type"]
 
     # ─────────────────────────────────────────────
-    # 1️⃣ Fertilizer recommendation (already CSFI-adjusted upstream)
+    # 1️⃣ Fertilizer
     # ─────────────────────────────────────────────
     recommendations["fertilizer"] = fertilizer
 
     # ─────────────────────────────────────────────
-    # 2️⃣ Water recommendation (FIXED: agronomically correct)
+    # 2️⃣ Nutrient Advisory (NEW)
+    # ─────────────────────────────────────────────
+    recommendations["nutrient_advisory"] = get_nutrient_advisory(
+        crop_type=crop,
+        csfi=csfi
+    )
+
+    # ─────────────────────────────────────────────
+    # 3️⃣ Water Recommendation
     # ─────────────────────────────────────────────
     irrigation_warning = None
 
     if crop == "Rice":
         if irrigation == "Drip":
-            # 🚨 Non-standard irrigation
-            irrigation_warning = (
-                "Drip irrigation is uncommon for rice. Ensure aerobic rice method is used."
-            )
+            irrigation_warning = "Drip irrigation is uncommon for rice. Use aerobic/SRI method."
             recommendations["water_usage"] = "900–1100 mm per season"
         else:
             recommendations["water_usage"] = "1200–1500 mm per season"
@@ -50,11 +43,11 @@ def get_recommendations(data, predicted_yield, fertilizer, metrics, csfi=0.5):
         recommendations["irrigation_warning"] = irrigation_warning
 
     # ─────────────────────────────────────────────
-    # 3️⃣ Improvement suggestions (CSFI-aware + realistic)
+    # 4️⃣ Improvements
     # ─────────────────────────────────────────────
     improvements = []
 
-    # Yield interpretation (more realistic thresholds)
+    # Yield logic
     if predicted_yield < 2.5:
         improvements.extend([
             "Low predicted yield detected.",
@@ -65,94 +58,79 @@ def get_recommendations(data, predicted_yield, fertilizer, metrics, csfi=0.5):
         improvements.append("Moderate yield predicted. Optimise nutrient and water usage.")
     else:
         if csfi < 0.30:
-            improvements.append(
-                "High yield but very low soil fertility. This is input-driven and unsustainable. Add organic matter."
-            )
+            improvements.append("High yield but poor soil fertility — input-driven and unsustainable.")
         elif csfi < 0.60:
-            improvements.append(
-                "Good yield with moderate soil fertility. Improve soil health gradually."
-            )
+            improvements.append("Good yield with moderate soil fertility. Improve soil health gradually.")
         else:
             improvements.append("Good yield and healthy soil. Maintain current practices.")
 
-    # CSFI-specific suggestion
+    # CSFI-based
     if csfi < 0.5:
         improvements.append("Improve soil fertility using compost, green manure, or biofertilisers.")
 
-    # Irrigation efficiency
+    # Irrigation
     if irrigation != "Drip":
         improvements.append("Consider drip irrigation to improve water efficiency.")
 
     # ─────────────────────────────────────────────
-    # 4️⃣ Metric-based rules (FIXED THRESHOLDS)
+    # 5️⃣ Metrics-based (FIXED LOGIC)
     # ─────────────────────────────────────────────
 
-    # WPI (kg/mm) — realistic threshold ~3–6
+    # Water productivity
     if metrics["WPI"] < 3:
-        improvements.append("Low water productivity. Optimise irrigation scheduling and reduce losses.")
+        improvements.append("Low water productivity. Optimise irrigation scheduling.")
 
-    # NES (kg yield per kg fertilizer)
-    if metrics["NES"] < 8:
-        improvements.append("Low nutrient efficiency. Apply balanced NPK and avoid overuse of nitrogen.")
+    # Nutrient efficiency
+    if metrics["NES"] < 40:
+        improvements.append("Low nutrient efficiency. Improve balanced fertilisation.")
 
-    # Input Intensity
-    if metrics["III"] > 3:
+    # Input Intensity (FIXED)
+    iii = metrics.get("III", 0)
+
+    if iii > 35:
         improvements.append("High input usage per acre. Reduce excessive fertiliser and pesticide use.")
+    elif iii > 20:
+        improvements.append("Moderate input usage. Optimise fertiliser application for better efficiency.")
+    else:
+        improvements.append("Low input usage. Ensure sufficient nutrients for optimal yield.")
 
     # Sustainability Risk
     if metrics["SRS"] > 0.6:
-        improvements.append("Moderate to high sustainability risk. Adopt eco-friendly farming practices.")
+        improvements.append("High sustainability risk. Adopt eco-friendly farming practices.")
 
     # Remove duplicates
     improvements = list(dict.fromkeys(improvements))
     recommendations["improvements"] = improvements
 
     # ─────────────────────────────────────────────
-    # 5️⃣ Crop rotation (REGION-AWARE IMPROVEMENT)
+    # 6️⃣ Crop Rotation (IMPROVED)
     # ─────────────────────────────────────────────
 
     crop_rotation_rules = {
         "Rice": {
-            "Kharif": ["Pulses", "Maize"],     # ✅ FIXED (removed wheat bias)
+            "Kharif": ["Pulses", "Maize"],
             "Rabi":   ["Pulses", "Vegetables"],
             "Zaid":   ["Maize", "Pulses"],
+        },
+        "Maize": {
+            "Kharif": ["Pulses", "Wheat"],   # ✅ IMPROVED
+            "Rabi":   ["Pulses"],
+            "Zaid":   ["Pulses", "Vegetables"],
         },
         "Wheat": {
             "Rabi":   ["Rice", "Maize"],
             "Kharif": ["Pulses"],
-            "Zaid":   ["Maize", "Vegetables"],
-        },
-        "Maize": {
-            "Kharif": ["Wheat", "Potato"],
-            "Rabi":   ["Pulses"],
-            "Zaid":   ["Pulses", "Vegetables"],
-        },
-        "Cotton": {
-            "Kharif": ["Soybean", "Pulses"],
-            "Rabi":   ["Chickpea"],
-        },
-        "Sugarcane": {
-            "Kharif": ["Wheat", "Mustard"],
-            "Rabi":   ["Maize", "Pulses"],
-        },
-        "Potato": {
-            "Rabi":   ["Maize", "Rice"],
-            "Kharif": ["Wheat", "Mustard"],
         },
         "Soybean": {
             "Kharif": ["Wheat", "Chickpea"],
             "Rabi":   ["Maize"],
-            "Zaid":   ["Maize", "Pulses"],
-        },
+        }
     }
 
     possible_next_crops = crop_rotation_rules.get(crop, {}).get(season)
 
     if possible_next_crops:
-        if soil in ("Loamy", "Clay", "Clayey") and len(possible_next_crops) > 1:
-            recommendations["next_crop"] = possible_next_crops[0]
-        else:
-            recommendations["next_crop"] = possible_next_crops[-1]
+        recommendations["next_crop"] = possible_next_crops[0]
     else:
         recommendations["next_crop"] = "Pulses"
 
