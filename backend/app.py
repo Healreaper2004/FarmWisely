@@ -151,9 +151,11 @@ def predict():
 
     # 6️⃣ Fertilizer recommendation
     fertilizer = get_fertilizer(
-        norm["crop_type"].title(),
-        soil_final,
-        norm["season"].title()
+        crop_type=norm["crop_type"],
+        soil_type=soil_final,
+        season=norm["season"],
+        csfi=csfi_value,
+        irrigation_type=norm["irrigation_type"]
     )
 
     # 7️⃣ Metrics

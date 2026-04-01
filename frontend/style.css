@@ -844,3 +844,57 @@ footer {
 .hv-card-2 { animation-delay: 0.30s; }
 .hv-card-3 { animation-delay: 0.45s; }
 .hv-badge  { animation-delay: 0.60s; }
+
+/* ═══════════════════════════════════════════
+   FERTILIZER INFO SECTION (LIGHT GREEN THEME)
+═══════════════════════════════════════════ */
+
+.fertilizer-info {
+  background: linear-gradient(135deg, #eef7e8, #f6fbf2);
+  border: 1px solid #cfe3b4;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-top: 20px;
+  box-shadow: 0 4px 14px rgba(46,79,31,0.08);
+}
+
+.fertilizer-info h3 {
+  color: #2e4f1f;
+  margin-bottom: 12px;
+}
+
+#fertCropSelect {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #bcd49c;
+  background: #f4faef;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+#fertilizer-content {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px 18px;
+  border: 1px solid #dbeccd;
+  transition: all 0.2s ease;
+}
+
+#fertilizer-content h4 {
+  color: #2e4f1f;
+  margin-bottom: 8px;
+}
+
+#fertilizer-content ul {
+  padding-left: 18px;
+}
+
+#fertilizer-content li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+  color: #333;
+}
+
+#fertilizer-content strong {
+  color: #1f3a12;
+}

@@ -356,43 +356,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const fertilizerInfo = {
   rice: `
-    <h4>Rice (Paddy)</h4>
+    <h4> Rice (Paddy)</h4>
     <ul>
-      <li><strong>Nitrogen:</strong> Urea (split doses), Ammonium sulphate</li>
-      <li><strong>Phosphorus:</strong> DAP / SSP at transplanting</li>
-      <li><strong>Potassium:</strong> MOP for grain filling</li>
-      <li><strong>Micronutrients:</strong> Zinc sulphate (common deficiency)</li>
+      <li><strong>Nitrogen (N):</strong> Urea (46% N) applied in 3 split doses (basal, tillering, panicle stage); Ammonium Sulphate used in alkaline soils</li>
+      <li><strong>Phosphorus (P):</strong> DAP (Diammonium Phosphate – 18:46:0) or SSP (Single Super Phosphate) applied at transplanting for root development</li>
+      <li><strong>Potassium (K):</strong> MOP (Muriate of Potash – KCl, 60% K₂O) improves grain filling and disease resistance</li>
+      <li><strong>Micronutrients:</strong> Zinc Sulphate (ZnSO₄) 5–10 kg/acre for zinc deficiency (very common in paddy fields)</li>
+      <li><strong>Note:</strong> Rice is a high nitrogen-demand crop; split application prevents leaching in flooded conditions</li>
     </ul>
   `,
 
   wheat: `
-    <h4>Wheat</h4>
+    <h4> Wheat</h4>
     <ul>
-      <li><strong>Nitrogen:</strong> Urea (top dressing at CRI stage)</li>
-      <li><strong>Phosphorus:</strong> DAP at sowing</li>
-      <li><strong>Potassium:</strong> MOP for grain strength</li>
-      <li><strong>Complex:</strong> NPK 12:32:16, 10:26:26</li>
+      <li><strong>Nitrogen (N):</strong> Urea applied in split doses, especially at CRI (Crown Root Initiation) stage</li>
+      <li><strong>Phosphorus (P):</strong> DAP (Diammonium Phosphate) applied at sowing for strong root development</li>
+      <li><strong>Potassium (K):</strong> MOP (Muriate of Potash) improves grain quality and lodging resistance</li>
+      <li><strong>Complex Fertilizers:</strong> NPK blends like 12:32:16 or 10:26:26 used for balanced nutrition</li>
+      <li><strong>Micronutrients:</strong> Zinc (Zn) often required in deficient soils</li>
+      <li><strong>Note:</strong> Balanced NPK is critical during early growth and grain formation</li>
     </ul>
   `,
 
   maize: `
-    <h4>Maize</h4>
+    <h4> Maize (Corn)</h4>
     <ul>
-      <li><strong>Nitrogen:</strong> Urea / CAN at knee-high stage</li>
-      <li><strong>Phosphorus:</strong> DAP for early growth</li>
-      <li><strong>Potassium:</strong> MOP (important in sandy soils)</li>
-      <li><strong>Complex:</strong> NPK 20-10-10, 15-15-15</li>
+      <li><strong>Nitrogen (N):</strong> Urea or CAN (Calcium Ammonium Nitrate) applied at knee-high stage</li>
+      <li><strong>Phosphorus (P):</strong> DAP (Diammonium Phosphate) for early root development</li>
+      <li><strong>Potassium (K):</strong> MOP (Muriate of Potash) essential for cob development</li>
+      <li><strong>Complex Fertilizers:</strong> NPK 20:10:10 or 15:15:15 for basal application</li>
+      <li><strong>Micronutrients:</strong> Zinc (Zn) and Boron (B) improve yield in deficient soils</li>
+      <li><strong>Note:</strong> Maize is highly responsive to nitrogen; timely application is critical</li>
     </ul>
   `,
 
   soybean: `
-    <h4>Soybean</h4>
+    <h4> Soybean (Legume)</h4>
     <ul>
-      <li><strong>Nitrogen:</strong> Minimal (legume crop)</li>
-      <li><strong>Phosphorus:</strong> DAP / SSP for nodulation</li>
-      <li><strong>Potassium:</strong> MOP for seed filling</li>
-      <li><strong>Sulphur:</strong> Gypsum / Bentonite sulphur</li>
-      <li><strong>Biofertilizers:</strong> Rhizobium inoculation</li>
+      <li><strong>Nitrogen (N):</strong> Minimal requirement due to nitrogen fixation; starter dose may be applied</li>
+      <li><strong>Phosphorus (P):</strong> DAP (Diammonium Phosphate) or SSP supports root nodulation</li>
+      <li><strong>Potassium (K):</strong> MOP (Muriate of Potash) improves seed filling and maturity</li>
+      <li><strong>Sulphur (S):</strong> Gypsum or Bentonite Sulphur improves protein synthesis</li>
+      <li><strong>Biofertilizers:</strong> Rhizobium inoculation enhances nitrogen fixation</li>
+      <li><strong>Micronutrients:</strong> Iron (Fe) and Zinc (Zn) required in low fertility soils</li>
+      <li><strong>Note:</strong> Excess nitrogen reduces nodulation — avoid overuse</li>
     </ul>
   `
 };
