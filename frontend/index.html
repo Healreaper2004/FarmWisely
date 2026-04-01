@@ -239,26 +239,34 @@
     </div>
 
     <details class="csfi-ref">
-      <summary>📋 Don't have a soil test? See typical value ranges</summary>
+      <summary>📋 Soil Nutrient Ranges (Crop-Specific)</summary>
+
+      <!-- NEW: Crop selector -->
+      <div style="margin:10px 0;">
+        <label><strong>Select Crop:</strong></label>
+        <select id="cropSelect" style="margin-left:10px;">
+          <option value="rice">Rice</option>
+          <option value="wheat">Wheat</option>
+          <option value="maize">Maize</option>
+          <option value="soybean">Soybean</option>
+        </select>
+      </div>
+
       <table class="ref-table">
         <thead>
-          <tr><th>Nutrient</th><th>Low</th><th>Medium</th><th>High</th><th>Unit</th></tr>
+          <tr>
+            <th>Nutrient</th>
+            <th>Low</th>
+            <th>Medium</th>
+            <th>High</th>
+            <th>Unit</th>
+          </tr>
         </thead>
-        <tbody>
-          <tr><td>N (Nitrogen)</td>    <td>&lt;25</td>   <td>25–50</td>    <td>&gt;50</td>   <td>mg/kg</td></tr>
-          <tr><td>P (Phosphorus)</td>  <td>&lt;10</td>   <td>10–25</td>    <td>&gt;25</td>   <td>mg/kg</td></tr>
-          <tr><td>K (Potassium)</td>   <td>&lt;110</td>  <td>110–280</td>  <td>&gt;280</td>  <td>mg/kg</td></tr>
-          <tr><td>Ca (Calcium)</td>    <td>&lt;500</td>  <td>500–1500</td> <td>&gt;1500</td> <td>mg/kg</td></tr>
-          <tr><td>Mg (Magnesium)</td>  <td>&lt;60</td>   <td>60–200</td>   <td>&gt;200</td>  <td>mg/kg</td></tr>
-          <tr><td>S (Sulphur)</td>     <td>&lt;5</td>    <td>5–20</td>     <td>&gt;20</td>   <td>mg/kg</td></tr>
-          <tr><td>Zn (Zinc)</td>       <td>&lt;0.5</td>  <td>0.5–1.5</td>  <td>&gt;1.5</td>  <td>mg/kg</td></tr>
-          <tr><td>Fe (Iron)</td>       <td>&lt;2</td>    <td>2–5</td>      <td>&gt;5</td>    <td>mg/kg</td></tr>
-          <tr><td>Cu (Copper)</td>     <td>&lt;0.2</td>  <td>0.2–0.8</td>  <td>&gt;0.8</td>  <td>mg/kg</td></tr>
-          <tr><td>Mn (Manganese)</td>  <td>&lt;1</td>    <td>1–3</td>      <td>&gt;3</td>    <td>mg/kg</td></tr>
-          <tr><td>B (Boron)</td>       <td>&lt;0.2</td>  <td>0.2–0.6</td>  <td>&gt;0.6</td>  <td>mg/kg</td></tr>
-          <tr><td>Mo (Molybdenum)</td> <td>&lt;0.05</td> <td>0.05–0.2</td> <td>&gt;0.2</td>  <td>mg/kg</td></tr>
-        </tbody>
+
+        <!-- IMPORTANT CHANGE -->
+        <tbody id="csfi-table-body"></tbody>
       </table>
+
       <p class="ref-note">
         💡 No soil test? Visit your nearest <strong>Krishi Vigyan Kendra (KVK)</strong>
         or <strong>Soil Testing Laboratory</strong> for a free report.
@@ -329,7 +337,7 @@
       </select>
 
       <input type="number" id="waterUsage" min="0" step="10"
-        placeholder="Water usage (m³ per season)" required />
+        placeholder="Water usage (mm per season)" required />
 
       <button id="predictBtn" class="btn-primary full" onclick="predictFarm()">
         Predict Yield

@@ -1,4 +1,4 @@
-from nutrient_rules import get_nutrient_advisory
+from backend.rules.nutrient_rules import get_nutrient_advisory
 
 def get_recommendations(data, predicted_yield, fertilizer, metrics, csfi=0.5):
     """
