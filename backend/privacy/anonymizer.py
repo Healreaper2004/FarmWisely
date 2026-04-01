@@ -6,7 +6,7 @@ Units:
   - farm_area       : acres
   - csfi            : 0–1 (Soil Fertility Index)
   - pesticide_used  : kg per season
-  - water_usage     : m³ per season
+  - water_usage     : mm per season
 
 Strategy:
   1. Strip       — remove explicit identifiers
@@ -19,7 +19,7 @@ SUPPRESSION_RULES = {
     "farm_area":      (0.1,   50.0),
     "csfi":           (0.0,    1.0),
     "pesticide_used": (0.0,    3.0),
-    "water_usage":    (50.0, 6000.0),
+    "water_usage":    (300.0, 2000.0),
 }
 
 SUPPRESSED = "suppressed"
