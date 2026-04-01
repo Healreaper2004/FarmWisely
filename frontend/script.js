@@ -349,3 +349,70 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTable("rice");
   }
 });
+
+/* ═══════════════════════════════════════════════════════
+   COMMON FERTILIZER INFO (CROP-WISE)
+═══════════════════════════════════════════════════════ */
+
+const fertilizerInfo = {
+  rice: `
+    <h4>Rice (Paddy)</h4>
+    <ul>
+      <li><strong>Nitrogen:</strong> Urea (split doses), Ammonium sulphate</li>
+      <li><strong>Phosphorus:</strong> DAP / SSP at transplanting</li>
+      <li><strong>Potassium:</strong> MOP for grain filling</li>
+      <li><strong>Micronutrients:</strong> Zinc sulphate (common deficiency)</li>
+    </ul>
+  `,
+
+  wheat: `
+    <h4>Wheat</h4>
+    <ul>
+      <li><strong>Nitrogen:</strong> Urea (top dressing at CRI stage)</li>
+      <li><strong>Phosphorus:</strong> DAP at sowing</li>
+      <li><strong>Potassium:</strong> MOP for grain strength</li>
+      <li><strong>Complex:</strong> NPK 12:32:16, 10:26:26</li>
+    </ul>
+  `,
+
+  maize: `
+    <h4>Maize</h4>
+    <ul>
+      <li><strong>Nitrogen:</strong> Urea / CAN at knee-high stage</li>
+      <li><strong>Phosphorus:</strong> DAP for early growth</li>
+      <li><strong>Potassium:</strong> MOP (important in sandy soils)</li>
+      <li><strong>Complex:</strong> NPK 20-10-10, 15-15-15</li>
+    </ul>
+  `,
+
+  soybean: `
+    <h4>Soybean</h4>
+    <ul>
+      <li><strong>Nitrogen:</strong> Minimal (legume crop)</li>
+      <li><strong>Phosphorus:</strong> DAP / SSP for nodulation</li>
+      <li><strong>Potassium:</strong> MOP for seed filling</li>
+      <li><strong>Sulphur:</strong> Gypsum / Bentonite sulphur</li>
+      <li><strong>Biofertilizers:</strong> Rhizobium inoculation</li>
+    </ul>
+  `
+};
+
+function updateFertilizerInfo(crop) {
+  const container = document.getElementById("fertilizer-content");
+  if (!container) return;
+
+  container.innerHTML = fertilizerInfo[crop];
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const fertSelect = document.getElementById("fertCropSelect");
+
+  if (fertSelect) {
+    fertSelect.addEventListener("change", function () {
+      updateFertilizerInfo(this.value);
+    });
+
+    // Default load
+    updateFertilizerInfo("rice");
+  }
+});
