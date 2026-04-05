@@ -21,14 +21,15 @@ def calculate_similarity(input_case, db_case):
     return score
 
 
-def get_top_cases(input_case, cases):
+def get_top_cases(input_case, cases, top_k=3):
     scored = []
-    
+
     for case in cases:
         sim = calculate_similarity(input_case, case)
-        yield_score = case["outcome"]["yield"]
+        yield_score = case.get("outcome", {}).get("yield", 0)
+
         scored.append((sim, yield_score, case))
-    
-    scored.sort(reverse=True)
-    
-    return [c[2] for c in scored[:3]]
+
+    scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
+
+    return [c[2] for c in scored[:top_k] if c[0] > 0]

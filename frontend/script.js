@@ -178,7 +178,7 @@ async function predictFarm(){
     `;
 
     if (result.case_id) {
-      Box.innerHTML += `
+      box.innerHTML += `
         <h3>👍 Was this recommendation useful?</h3>
         <button onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
         <button onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
@@ -238,3 +238,74 @@ async function sendRating(caseId) {
     alert("❌ Failed to submit rating");
   }
 }
+
+/* =========================
+   COMMON FERTILIZER INFO
+========================= */
+
+const fertilizerInfo = {
+  rice: `
+    <h4>🌾 Rice (Paddy)</h4>
+    <ul>
+      <li><b>Nitrogen:</b> Urea (split doses)</li>
+      <li><b>Phosphorus:</b> DAP at transplanting</li>
+      <li><b>Potassium:</b> MOP for grain filling</li>
+      <li><b>Micronutrients:</b> Zinc Sulphate</li>
+    </ul>
+  `,
+  wheat: `
+    <h4>🌾 Wheat</h4>
+    <ul>
+      <li><b>Nitrogen:</b> Urea at CRI stage</li>
+      <li><b>Phosphorus:</b> DAP at sowing</li>
+      <li><b>Potassium:</b> MOP improves yield</li>
+    </ul>
+  `,
+  maize: `
+    <h4>🌽 Maize</h4>
+    <ul>
+      <li><b>Nitrogen:</b> Urea at knee stage</li>
+      <li><b>Phosphorus:</b> DAP early stage</li>
+      <li><b>Potassium:</b> MOP for cob growth</li>
+    </ul>
+  `,
+  soybean: `
+    <h4>🌱 Soybean</h4>
+    <ul>
+      <li><b>Nitrogen:</b> Minimal (legume)</li>
+      <li><b>Phosphorus:</b> DAP supports nodulation</li>
+      <li><b>Sulphur:</b> Gypsum improves protein</li>
+    </ul>
+  `
+};
+
+function updateFertilizerInfo(crop) {
+  const container = document.getElementById("fertilizer-content");
+  if (!container) return;
+
+  container.innerHTML = fertilizerInfo[crop];
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // Fertilizer dropdown (manual selection)
+  const fertSelect = document.getElementById("fertCropSelect");
+
+  if (fertSelect) {
+    fertSelect.addEventListener("change", function () {
+      updateFertilizerInfo(this.value);
+    });
+
+    updateFertilizerInfo("rice");
+  }
+
+  // 🔥 AUTO-SYNC WITH MAIN CROP SELECT
+  const cropSelect = document.getElementById("crop");
+
+  if (cropSelect) {
+    cropSelect.addEventListener("change", function () {
+      updateFertilizerInfo(this.value.toLowerCase());
+    });
+  }
+
+});
