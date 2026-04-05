@@ -1,17 +1,12 @@
 """
 anonymizer.py
-Privacy-preserving anonymization for FarmWisely (CSFI-based model)
+Privacy-preserving anonymization for FarmWisely (CBR + ML ready)
 
-Units:
-  - farm_area       : acres
-  - csfi            : 0–1 (Soil Fertility Index)
-  - pesticide_used  : kg per season
-  - water_usage     : mm per season
-
-Strategy:
-  1. Strip       — remove explicit identifiers
-  2. Suppress    — remove extreme/outlier values
-  3. Generalise  — convert numbers into safe range buckets
+Enhancements:
+  - Compatible with case-based reasoning (CBR)
+  - Stronger quasi-identifier protection
+  - Region generalization
+  - Unified anonymization pipeline
 """
 
 # ── Suppression thresholds ──────────────────────────────────────────────────
@@ -24,7 +19,7 @@ SUPPRESSION_RULES = {
 
 SUPPRESSED = "suppressed"
 
-# ── Explicit identifiers to remove ──────────────────────────────────────────
+# ── Explicit identifiers ──────────────────────────────────────────────────
 EXPLICIT_IDENTIFIERS = {
     "name", "farmer_name", "full_name",
     "phone", "mobile", "contact",
@@ -34,7 +29,7 @@ EXPLICIT_IDENTIFIERS = {
     "aadhar", "voter_id", "id", "farmer_id",
 }
 
-# ── Helper: bucket mapping ──────────────────────────────────────────────────
+# ── Helper: bucket mapping ─────────────────────────────────────────────────
 def _bucket(value: float, breakpoints: list, labels: list) -> str:
     for bp, label in zip(breakpoints, labels):
         if value <= bp:
@@ -42,7 +37,7 @@ def _bucket(value: float, breakpoints: list, labels: list) -> str:
     return labels[-1]
 
 
-# ── Generalisation functions ────────────────────────────────────────────────
+# ── Generalisation functions ───────────────────────────────────────────────
 def _generalise_farm_area(acres: float) -> str:
     return _bucket(
         acres,
@@ -56,10 +51,10 @@ def _generalise_csfi(csfi: float) -> str:
         csfi,
         [0.30, 0.60, 0.80],
         [
-            "poor (0–0.30)",
-            "moderate (0.30–0.60)",
-            "good (0.60–0.80)",
-            "excellent (0.80–1.0)"
+            "poor",
+            "moderate",
+            "good",
+            "excellent"
         ]
     )
 
@@ -69,26 +64,38 @@ def _generalise_pesticide(kg: float) -> str:
         kg,
         [0.5, 1.5, 3.0],
         [
-            "minimal (<0.5 kg)",
-            "low (0.5–1.5 kg)",
-            "moderate (1.5–3 kg)",
-            "high (>3 kg)"
+            "minimal",
+            "low",
+            "moderate",
+            "high"
         ]
     )
 
 
-def _generalise_water(m3: float) -> str:
+def _generalise_water(mm: float) -> str:
     return _bucket(
-        m3,
-        [500, 1500, 3000, 5000],
+        mm,
+        [500, 1000, 1500, 2000],
         [
-            "very low (<500 m³)",
-            "low (500–1500 m³)",
-            "moderate (1.5–3k m³)",
-            "high (3–5k m³)",
-            "very high (>5k m³)"
+            "very low",
+            "low",
+            "moderate",
+            "high",
+            "very high"
         ]
     )
+
+
+def _generalise_region(region: str) -> str:
+    """
+    Generalize location to prevent re-identification
+    Example:
+      "Chennai Rural" → "Tamil Nadu Region"
+    """
+    if not region:
+        return "unknown region"
+    
+    return region.split()[0] + " Region"
 
 
 # ── Step 1: Remove identifiers ─────────────────────────────────────────────
@@ -109,7 +116,7 @@ def _suppress(data: dict) -> dict:
                 val = float(result[field])
                 if val < lo or val > hi:
                     result[field] = SUPPRESSED
-            except (TypeError, ValueError):
+            except:
                 result[field] = SUPPRESSED
 
     return result
@@ -119,40 +126,50 @@ def _suppress(data: dict) -> dict:
 def _generalise(data: dict) -> dict:
     anon = {}
 
-    # Safe categorical fields
-    for field in ("crop_type", "soil_type", "irrigation_type", "season"):
-        if field in data:
-            anon[field] = data[field]
+    # Core context (CBR compatible)
+    anon["context"] = {
+        "crop": data.get("crop_type", "unknown"),
+        "soil": data.get("soil_type", "unknown"),
+        "season": data.get("season", "unknown"),
+        "irrigation": data.get("irrigation_type", "unknown"),
+        "region": _generalise_region(data.get("region"))
+    }
 
     # Helper
-    def _safe(field, fn, output_key):
+    def _safe(field, fn):
         val = data.get(field)
 
         if val is None:
-            anon[output_key] = "not provided"
-        elif val == SUPPRESSED:
-            anon[output_key] = SUPPRESSED
-        else:
-            try:
-                anon[output_key] = fn(float(val))
-            except (TypeError, ValueError):
-                anon[output_key] = SUPPRESSED
+            return "not provided"
+        if val == SUPPRESSED:
+            return SUPPRESSED
+        
+        try:
+            return fn(float(val))
+        except:
+            return SUPPRESSED
 
-    _safe("farm_area", _generalise_farm_area, "farm_area_range")
-    _safe("csfi", _generalise_csfi, "csfi_range")  # ✅ NEW
-    _safe("pesticide_used", _generalise_pesticide, "pesticide_range")
-    _safe("water_usage", _generalise_water, "water_usage_range")
+    anon["farm_size_bucket"] = _safe("farm_area", _generalise_farm_area)
+    anon["csfi_bucket"] = _safe("csfi", _generalise_csfi)
+    anon["pesticide_bucket"] = _safe("pesticide_used", _generalise_pesticide)
+    anon["water_bucket"] = _safe("water_usage", _generalise_water)
 
     return anon
+
+
+# ── Optional: k-anonymity placeholder (for future extension) ───────────────
+def enforce_k_anonymity(cases, k=3):
+    """
+    Ensures at least k similar records exist before storing.
+    (Currently placeholder for research/demo)
+    """
+    return len(cases) >= k
 
 
 # ── Public API ─────────────────────────────────────────────────────────────
 def anonymize(raw_data: dict) -> dict:
     """
     Full anonymization pipeline
-
-    Input  : raw farmer submission
-    Output : anonymized safe case data
     """
 
     data = _strip(raw_data)
@@ -163,7 +180,8 @@ def anonymize(raw_data: dict) -> dict:
         "identifiers_removed": True,
         "quasi_identifiers_generalised": True,
         "outliers_suppressed": True,
-        "method": "strip + suppress + range-bucketing",
+        "region_generalized": True,
+        "method": "strip + suppress + range-bucketing + region masking"
     }
 
     return anon

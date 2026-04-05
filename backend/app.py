@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
+from backend.services.recommendation_service import get_recommendation
 from flask_cors import CORS
 import joblib
 import pandas as pd
@@ -81,6 +82,29 @@ def serve_static(path):
     # API routes are handled by their own decorators above this catch-all
     return send_from_directory(FRONTEND_DIR, path)
 
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.json
+    
+    input_case = {
+        "crop": data["crop"],
+        "soil": data["soil"],
+        "season": data["season"],
+        "irrigation": data["irrigation"]
+    }
+    
+    cbr_result = get_recommendation(input_case)
+    
+    if cbr_result["type"] == "CBR":
+        return jsonify(cbr_result)
+    
+    # fallback to ML
+    prediction = model.predict(...)
+    
+    return jsonify({
+        "type": "ML",
+        "prediction": prediction
+    })
 
 # ── Health check ────────────────────────────────────────────────────────────
 @app.route("/health")
