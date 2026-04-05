@@ -56,6 +56,7 @@ def build_case(data, predicted_yield, recommendations, metrics):
       - Irrigation is validated
       - Safe handling of missing values
     """
+    cases_collection = get_cases_collection()
 
     # ── 1. Normalize water BEFORE anonymization ───────────────
     if "water_usage" in data:
