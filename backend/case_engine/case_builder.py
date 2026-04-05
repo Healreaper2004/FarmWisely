@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from db.mongo import cases_collection
+from db.mongo import get_cases_collection
 from backend.privacy.anonymizer import anonymize
 
 
