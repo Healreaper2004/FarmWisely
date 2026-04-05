@@ -143,6 +143,15 @@ async function predictFarm(){
 
       btn.disabled=false;
       btn.innerText="Predict Yield";
+      
+      if (result.case_id) {
+        box.innerHTML += `
+          <h3>👍 Was this helpful?</h3>
+          <button onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
+          <button onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
+        `;
+      }
+      
       return;
     }
 
@@ -168,10 +177,64 @@ async function predictFarm(){
       <p>${rec.next_crop||"N/A"}</p>
     `;
 
+    if (result.case_id) {
+      Box.innerHTML += `
+        <h3>👍 Was this recommendation useful?</h3>
+        <button onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
+        <button onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
+
+        <br><br>
+        <label>Rate (1–5):</label>
+        <input type="number" id="rating" min="1" max="5">
+        <button onclick="sendRating('${result.case_id}')">Submit Rating</button>
+      `;
+    }
+
   }catch(e){
     box.innerHTML="❌ Server error";
   }
 
   btn.disabled=false;
   btn.innerText="Predict Yield";
+}
+
+async function sendFeedback(caseId, useful) {
+  try {
+    await fetch(`${API_URL}/feedback`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        case_id: caseId,
+        useful: useful
+      })
+    });
+
+    alert("✅ Feedback saved!");
+  } catch (e) {
+    alert("❌ Failed to save feedback");
+  }
+}
+
+async function sendRating(caseId) {
+  const rating = document.getElementById("rating").value;
+
+  if (!rating || rating < 1 || rating > 5) {
+    alert("Enter rating between 1–5");
+    return;
+  }
+
+  try {
+    await fetch(`${API_URL}/feedback`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        case_id: caseId,
+        rating: Number(rating)
+      })
+    });
+
+    alert("⭐ Rating submitted!");
+  } catch (e) {
+    alert("❌ Failed to submit rating");
+  }
 }

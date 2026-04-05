@@ -82,30 +82,6 @@ def serve_static(path):
     # API routes are handled by their own decorators above this catch-all
     return send_from_directory(FRONTEND_DIR, path)
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    data = request.json
-    
-    input_case = {
-        "crop": data["crop"],
-        "soil": data["soil"],
-        "season": data["season"],
-        "irrigation": data["irrigation"]
-    }
-    
-    cbr_result = get_recommendation(input_case)
-    
-    if cbr_result["type"] == "CBR":
-        return jsonify(cbr_result)
-    
-    # fallback to ML
-    prediction = model.predict(...)
-    
-    return jsonify({
-        "type": "ML",
-        "prediction": prediction
-    })
-
 # ── Health check ────────────────────────────────────────────────────────────
 @app.route("/health")
 def health():
@@ -155,6 +131,18 @@ def predict():
         water_usage = float(data["water_usage"])
 
         soil_final = SOIL_TITLE_MAP.get(norm["soil_type"], norm["soil_type"].title())
+
+        input_case = {
+            "crop": norm["crop_type"].title(),
+            "soil": soil_final,
+            "season": norm["season"].title(),
+            "irrigation": norm["irrigation_type"].title()
+        }
+
+        cbr_result = get_recommendation(input_case)
+
+        if cbr_result["type"] == "CBR":
+            return jsonify(cbr_result)
 
         input_df = pd.DataFrame([{
             "Crop_Type":       norm["crop_type"].title(),
@@ -227,6 +215,44 @@ def predict():
         "case_id":         case["case_id"]
     })
 
+@app.route("/feedback", methods=["POST"])
+def submit_feedback():
+    data = request.json
+
+    case_id = data.get("case_id")
+    useful  = data.get("useful")
+    rating  = data.get("rating")
+
+    if not case_id:
+        return jsonify({"error": "case_id required"}), 400
+
+    update_fields = {}
+
+    # ✅ Only update fields that are provided
+    if useful is not None:
+        update_fields["feedback.useful"] = useful
+
+    if rating is not None:
+        if not (1 <= int(rating) <= 5):
+            return jsonify({"error": "Rating must be between 1 and 5"}), 400
+        update_fields["feedback.rating"] = int(rating)
+
+    if not update_fields:
+        return jsonify({"error": "No feedback provided"}), 400
+
+    # 🔥 Add timestamp (important for analytics)
+    from datetime import datetime
+    update_fields["feedback.updated_at"] = datetime.utcnow()
+
+    result = cases_collection.update_one(
+        {"case_id": case_id},
+        {"$set": update_fields}
+    )
+
+    if result.matched_count == 0:
+        return jsonify({"error": "Case not found"}), 404
+
+    return jsonify({"message": "Feedback saved successfully"})
 
 # ── Cases endpoint ──────────────────────────────────────────────────────────
 @app.route("/cases", methods=["GET"])

@@ -1,6 +1,6 @@
 def calculate_similarity(input_case, db_case):
     score = 0
-    
+
     if input_case["crop"] == db_case["context"]["crop"]:
         score += 3
     if input_case["soil"] == db_case["context"]["soil"]:
@@ -9,7 +9,15 @@ def calculate_similarity(input_case, db_case):
         score += 2
     if input_case["irrigation"] == db_case["context"]["irrigation"]:
         score += 1
-        
+
+    # 🔥 NEW: feedback boost
+    feedback = db_case.get("feedback", {})
+    if feedback.get("useful") == True:
+        score += 2
+
+    if feedback.get("rating"):
+        score += feedback["rating"] * 0.5
+
     return score
 
 

@@ -13,7 +13,8 @@ def get_recommendation(input_case):
             "type": "CBR",
             "cases_used": len(similar_cases),
             "recommendation": similar_cases[0]["solution"],
-            "reason": "Based on similar past cases"
+            "reason": "Based on similar past cases",
+            "case_id": best.get("case_id")
         }
     
     return {"type": "ML_FALLBACK"}

@@ -123,10 +123,16 @@ def build_case(data, predicted_yield, recommendations, metrics):
             "outliers_suppressed": True,
         }),
 
+        # ── 9. Feedback ───────────────────────────────
+        "feedback": {
+            "useful": None,
+            "rating": None
+        },
+
         "created_at": datetime.now(timezone.utc).isoformat()
     }
 
-    # ── 9. Save to MongoDB ───────────────────────────────────
+    # ─ 10. Save to MongoDB ───────────────────────────────────
     result = cases_collection.insert_one(dict(case))
     case["_id"] = str(result.inserted_id)
 
