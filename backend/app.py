@@ -142,7 +142,9 @@ def predict():
         cbr_result = get_recommendation(input_case)
 
         if cbr_result["type"] == "CBR":
-            return jsonify(cbr_result)
+            cbr_data = cbr_result
+        else:
+            cbr_data = None
 
         input_df = pd.DataFrame([{
             "Crop_Type":       norm["crop_type"].title(),
@@ -208,11 +210,13 @@ def predict():
     raw_collection.insert_one(raw_doc)
 
     return jsonify({
+        "type": "HYBRID",
         "predicted_yield": predicted_yield,
         "yield_unit":      "tons",
         "metrics":         metrics,
         "recommendations": recommendations,
-        "case_id":         case["case_id"]
+        "case_id":         case["case_id"],
+        "cbr": cbr_data   
     })
 
 @app.route("/feedback", methods=["POST"])
@@ -226,29 +230,26 @@ def submit_feedback():
     if not case_id:
         return jsonify({"error": "case_id required"}), 400
 
+    # ✅ Build update fields safely
     update_fields = {}
 
-    # ✅ Only update fields that are provided
     if useful is not None:
         update_fields["feedback.useful"] = useful
 
     if rating is not None:
-        if not (1 <= int(rating) <= 5):
-            return jsonify({"error": "Rating must be between 1 and 5"}), 400
-        update_fields["feedback.rating"] = int(rating)
+        update_fields["feedback.rating"] = rating
 
+    # ❗ If nothing to update
     if not update_fields:
         return jsonify({"error": "No feedback provided"}), 400
 
-    # 🔥 Add timestamp (important for analytics)
-    from datetime import datetime
-    update_fields["feedback.updated_at"] = datetime.utcnow()
-
+    # ✅ Update MongoDB
     result = cases_collection.update_one(
         {"case_id": case_id},
         {"$set": update_fields}
     )
 
+    # ❗ If case not found
     if result.matched_count == 0:
         return jsonify({"error": "Case not found"}), 404
 

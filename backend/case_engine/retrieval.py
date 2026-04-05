@@ -10,8 +10,9 @@ def calculate_similarity(input_case, db_case):
     if input_case["irrigation"] == db_case["context"]["irrigation"]:
         score += 1
 
-    # 🔥 NEW: feedback boost
+    # 🔥 NEW: feedback impact
     feedback = db_case.get("feedback", {})
+
     if feedback.get("useful") == True:
         score += 2
 

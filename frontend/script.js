@@ -12,7 +12,9 @@ const NUTRIENT_RANGES = {
   Mn:{min:0,max:10},B:{min:0,max:2},Mo:{min:0,max:0.5},
 };
 
-function norm(v,min,max){return max===min?0:Math.min(Math.max((v-min)/(max-min),0),1)}
+function norm(v,min,max){
+  return max===min ? 0 : Math.min(Math.max((v-min)/(max-min),0),1);
+}
 
 function calculateCSFI(){
   const ids=["n","p","k","ca","mg","s","zn","fe","cu","mn","b","mo"];
@@ -69,15 +71,21 @@ function useCSFI(){
 /* =========================
    PREDICTION
 ========================= */
+
 function formatFertilizer(f){
-  if(!f||!f.quantity)return"N/A";
+  if(!f||!f.quantity)return "N/A";
+
   if(typeof f.quantity==="object"){
-    return Object.entries(f.quantity).map(([k,v])=>`<b>${k}:</b> ${v}`).join("<br>");
+    return Object.entries(f.quantity)
+      .map(([k,v])=>`<b>${k}:</b> ${v}`)
+      .join("<br>");
   }
+
   return f.quantity;
 }
 
 async function predictFarm(){
+
   const crop=document.getElementById("crop").value;
   const soil=document.getElementById("soil").value;
   const irrigation=document.getElementById("irrigation").value;
@@ -91,7 +99,8 @@ async function predictFarm(){
   const btn=document.getElementById("predictBtn");
 
   if(!crop||!soil||!irrigation||!season||!area||!csfi||!pesticide||!water){
-    box.innerHTML="❌ Fill all fields";return;
+    box.innerHTML="❌ Fill all fields";
+    return;
   }
 
   const data={
@@ -107,7 +116,8 @@ async function predictFarm(){
 
   btn.disabled=true;
   btn.innerText="Predicting...";
-  box.innerHTML="⏳ Analysing...";
+  box.classList.remove("hidden");
+  box.innerHTML="⏳ Analysing your farm data...";
 
   try{
     const res=await fetch(`${API_URL}/predict`,{
@@ -117,80 +127,74 @@ async function predictFarm(){
     });
 
     const result=await res.json();
+    console.log("API Response:", result);
 
-    /* =========================
-       🧠 CASE-BASED RESULT
-    ========================= */
-    if(result.type==="CBR"){
-      const sol=result.recommendation||{};
+    const fert = result?.recommendations?.fertilizer || {};
+    const rec  = result?.recommendations || {};
+    const metrics = result?.metrics || {};
 
-      box.innerHTML=`
-        <h3>🧠 Case-Based Recommendation</h3>
-        <p style="color:green;">Based on ${result.cases_used} similar cases</p>
-        <p>${result.reason}</p>
+    // ✅ FIXED CSFI (outside template)
+    const csfiNum = Number(csfi);
+    let csfiLabel = csfiNum < 0.3 ? "Poor" :
+                    csfiNum < 0.6 ? "Moderate" :
+                    csfiNum < 0.8 ? "Good" : "Excellent";
 
-        <h3>🌱 Fertilizer</h3>
-        <p><b>${sol.fertilizer?.name||"N/A"}</b></p>
-        <p>${formatFertilizer(sol.fertilizer)}</p>
-
-        <h3>💧 Irrigation</h3>
-        <p>${sol.irrigation_strategy||"N/A"}</p>
-
-        <div style="background:#e8f5e9;padding:10px;border-radius:8px;">
-          💡 Based on real anonymized farmer data
-        </div>
-      `;
-
-      btn.disabled=false;
-      btn.innerText="Predict Yield";
-      
-      if (result.case_id) {
-        box.innerHTML += `
-          <h3>👍 Was this helpful?</h3>
-          <button onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
-          <button onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
-        `;
-      }
-      
-      return;
-    }
-
-    /* =========================
-       🤖 ML RESULT
-    ========================= */
-    const fert=result?.recommendations?.fertilizer||{};
-    const rec=result?.recommendations||{};
-
-    box.innerHTML=`
-      <h3>🤖 AI Prediction</h3>
-      <h3>🌾 Yield</h3>
+    box.innerHTML = `
+      <h3>🌾 Predicted Yield</h3>
       <p><b>${(result.predicted_yield||0).toFixed(2)} tons</b></p>
+      <p style="font-size:0.85em;color:#666;">
+        Case saved as <code>${result.case_id || "N/A"}</code>
+      </p>
 
-      <h3>🌱 Fertilizer</h3>
-      <p><b>${fert.name||"N/A"}</b></p>
+      <h3>🌱 Fertility Status</h3>
+      <p><strong>CSFI:</strong> ${csfiNum.toFixed(2)} (${csfiLabel})</p>
+
+      <h3>🌱 Fertilizer Recommendation</h3>
+      <p><strong>${fert.name || "N/A"}</strong></p>
       <p>${formatFertilizer(fert)}</p>
 
-      <h3>💧 Water</h3>
-      <p>${rec.water_usage||"N/A"}</p>
+      <h3>💧 Water Strategy</h3>
+      <p>${rec.water_usage || "N/A"}</p>
 
-      <h3>🔁 Next Crop</h3>
-      <p>${rec.next_crop||"N/A"}</p>
+      <h3>🔁 Recommended Next Crop</h3>
+      <p><strong>${rec.next_crop || "N/A"}</strong></p>
+
+      <h3>📊 Farm Metrics</h3>
+      <table style="width:100%;font-size:0.9em;">
+        <tr><td>WPI</td><td>${metrics.WPI ?? "N/A"}</td></tr>
+        <tr><td>NES</td><td>${metrics.NES ?? "N/A"}</td></tr>
+        <tr><td>SRS</td><td>${metrics.SRS ?? "N/A"}</td></tr>
+      </table>
     `;
 
     if (result.case_id) {
       box.innerHTML += `
-        <h3>👍 Was this recommendation useful?</h3>
-        <button onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
-        <button onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
+        <div style="margin-top:15px;padding:12px;border-top:1px solid #ddd;">
+          <h3>👍 Was this recommendation useful?</h3>
 
-        <br><br>
-        <label>Rate (1–5):</label>
-        <input type="number" id="rating" min="1" max="5">
-        <button onclick="sendRating('${result.case_id}')">Submit Rating</button>
+          <button onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
+          <button onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
+
+          <br><br>
+
+          <label>Rate (1–5):</label>
+          <input type="number" id="rating" min="1" max="5" style="width:60px;">
+          <button onclick="sendRating('${result.case_id}')">Submit</button>
+        </div>
+      `;
+    }
+
+    // 🧠 CBR insight
+    if(result.cbr){
+      box.innerHTML += `
+        <div style="background:#e8f5e9;padding:10px;border-radius:8px;margin-top:10px;">
+          🧠 Based on ${result.cbr.cases_used} similar farmer cases
+        </div>
       `;
     }
 
   }catch(e){
+    console.error(e);
     box.innerHTML="❌ Server error";
   }
 
@@ -198,15 +202,16 @@ async function predictFarm(){
   btn.innerText="Predict Yield";
 }
 
+/* =========================
+   FEEDBACK
+========================= */
+
 async function sendFeedback(caseId, useful) {
   try {
     await fetch(`${API_URL}/feedback`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        case_id: caseId,
-        useful: useful
-      })
+      body: JSON.stringify({case_id: caseId, useful})
     });
 
     alert("✅ Feedback saved!");
@@ -227,10 +232,7 @@ async function sendRating(caseId) {
     await fetch(`${API_URL}/feedback`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        case_id: caseId,
-        rating: Number(rating)
-      })
+      body: JSON.stringify({case_id: caseId, rating: Number(rating)})
     });
 
     alert("⭐ Rating submitted!");
@@ -244,64 +246,29 @@ async function sendRating(caseId) {
 ========================= */
 
 const fertilizerInfo = {
-  rice: `
-    <h4>🌾 Rice (Paddy)</h4>
-    <ul>
-      <li><b>Nitrogen:</b> Urea (split doses)</li>
-      <li><b>Phosphorus:</b> DAP at transplanting</li>
-      <li><b>Potassium:</b> MOP for grain filling</li>
-      <li><b>Micronutrients:</b> Zinc Sulphate</li>
-    </ul>
-  `,
-  wheat: `
-    <h4>🌾 Wheat</h4>
-    <ul>
-      <li><b>Nitrogen:</b> Urea at CRI stage</li>
-      <li><b>Phosphorus:</b> DAP at sowing</li>
-      <li><b>Potassium:</b> MOP improves yield</li>
-    </ul>
-  `,
-  maize: `
-    <h4>🌽 Maize</h4>
-    <ul>
-      <li><b>Nitrogen:</b> Urea at knee stage</li>
-      <li><b>Phosphorus:</b> DAP early stage</li>
-      <li><b>Potassium:</b> MOP for cob growth</li>
-    </ul>
-  `,
-  soybean: `
-    <h4>🌱 Soybean</h4>
-    <ul>
-      <li><b>Nitrogen:</b> Minimal (legume)</li>
-      <li><b>Phosphorus:</b> DAP supports nodulation</li>
-      <li><b>Sulphur:</b> Gypsum improves protein</li>
-    </ul>
-  `
+  rice: `<h4>🌾 Rice</h4><ul><li>Urea split doses</li><li>DAP basal</li><li>MOP for grain</li></ul>`,
+  wheat: `<h4>🌾 Wheat</h4><ul><li>Urea at CRI</li><li>DAP at sowing</li></ul>`,
+  maize: `<h4>🌽 Maize</h4><ul><li>Urea at knee stage</li><li>DAP early</li></ul>`,
+  soybean: `<h4>🌱 Soybean</h4><ul><li>Low nitrogen</li><li>DAP + Rhizobium</li></ul>`
 };
 
 function updateFertilizerInfo(crop) {
   const container = document.getElementById("fertilizer-content");
   if (!container) return;
-
   container.innerHTML = fertilizerInfo[crop];
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Fertilizer dropdown (manual selection)
   const fertSelect = document.getElementById("fertCropSelect");
-
   if (fertSelect) {
     fertSelect.addEventListener("change", function () {
       updateFertilizerInfo(this.value);
     });
-
     updateFertilizerInfo("rice");
   }
 
-  // 🔥 AUTO-SYNC WITH MAIN CROP SELECT
   const cropSelect = document.getElementById("crop");
-
   if (cropSelect) {
     cropSelect.addEventListener("change", function () {
       updateFertilizerInfo(this.value.toLowerCase());
