@@ -81,7 +81,7 @@ function formatFertilizer(f){
       .join("<br>");
   }
 
-  return f.quantity;
+  return `<strong>Recommended Dose:</strong> ${f.quantity}`;
 }
 
 async function predictFarm(){
@@ -155,6 +155,7 @@ async function predictFarm(){
 
       <h3>💧 Water Strategy</h3>
       <p>${rec.water_usage || "N/A"}</p>
+      ${Number(water) > 1000 ? `<p style="color:#c0392b;">⚠ Excess water usage detected. Reduce irrigation.</p>` : ""}
 
       <h3>🔁 Recommended Next Crop</h3>
       <p><strong>${rec.next_crop || "N/A"}</strong></p>
@@ -163,7 +164,12 @@ async function predictFarm(){
       <table style="width:100%;font-size:0.9em;">
         <tr><td>WPI</td><td>${metrics.WPI ?? "N/A"}</td></tr>
         <tr><td>NES</td><td>${metrics.NES ?? "N/A"}</td></tr>
-        <tr><td>SRS</td><td>${metrics.SRS ?? "N/A"}</td></tr>
+        <tr>
+          <td>SRS</td>
+          <td style="color:${metrics.SRS > 0.6 ? '#c0392b' : '#27ae60'}">
+            ${metrics.SRS ?? "N/A"}
+          </td>
+        </tr>
       </table>
     `;
 
@@ -172,13 +178,16 @@ async function predictFarm(){
         <div style="margin-top:15px;padding:12px;border-top:1px solid #ddd;">
           <h3>👍 Was this recommendation useful?</h3>
 
-          <button onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
-          <button onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
+          <button style="margin-right:10px;padding:6px 12px;border-radius:6px;background:#2e7d32;color:white;border:none;"
+            onclick="sendFeedback('${result.case_id}', true)">👍 Yes</button>
+
+          <button style="padding:6px 12px;border-radius:6px;background:#c62828;color:white;border:none;"
+            onclick="sendFeedback('${result.case_id}', false)">👎 No</button>
 
           <br><br>
 
           <label>Rate (1–5):</label>
-          <input type="number" id="rating" min="1" max="5" style="width:60px;">
+          <input type="number" id="rating" min="1" max="5" style="width:60px;margin:0 10px;">
           <button onclick="sendRating('${result.case_id}')">Submit</button>
         </div>
       `;
@@ -214,7 +223,8 @@ async function sendFeedback(caseId, useful) {
       body: JSON.stringify({case_id: caseId, useful})
     });
 
-    alert("✅ Feedback saved!");
+    document.getElementById("prediction-result").innerHTML += 
+    `<p style="color:green;">✔ Feedback recorded</p>`;
   } catch (e) {
     alert("❌ Failed to save feedback");
   }
@@ -245,11 +255,52 @@ async function sendRating(caseId) {
    COMMON FERTILIZER INFO
 ========================= */
 
-const fertilizerInfo = {
-  rice: `<h4>🌾 Rice</h4><ul><li>Urea split doses</li><li>DAP basal</li><li>MOP for grain</li></ul>`,
-  wheat: `<h4>🌾 Wheat</h4><ul><li>Urea at CRI</li><li>DAP at sowing</li></ul>`,
-  maize: `<h4>🌽 Maize</h4><ul><li>Urea at knee stage</li><li>DAP early</li></ul>`,
-  soybean: `<h4>🌱 Soybean</h4><ul><li>Low nitrogen</li><li>DAP + Rhizobium</li></ul>`
+const fertilizerInfo = { 
+
+  rice: `
+    <h4>🌾 Rice (Paddy)</h4> 
+    <ul> 
+      <li><strong>Nitrogen (N):</strong> Urea (46% N) applied in 3 split doses (basal, tillering, panicle stage); Ammonium Sulphate used in alkaline soils</li> 
+      <li><strong>Phosphorus (P):</strong> DAP (18:46:0) or SSP applied at transplanting</li> 
+      <li><strong>Potassium (K):</strong> MOP improves grain filling and disease resistance</li> 
+      <li><strong>Micronutrients:</strong> Zinc Sulphate (ZnSO₄) 5–10 kg/acre</li> 
+      <li><strong>Note:</strong> High nitrogen-demand crop</li> 
+    </ul>
+  `, 
+
+  wheat: `
+    <h4>🌾 Wheat</h4> 
+    <ul> 
+      <li><strong>Nitrogen (N):</strong> Urea at CRI stage</li> 
+      <li><strong>Phosphorus (P):</strong> DAP at sowing</li> 
+      <li><strong>Potassium (K):</strong> MOP improves grain quality</li> 
+      <li><strong>Complex:</strong> NPK (12:32:16)</li> 
+      <li><strong>Micronutrients:</strong> Zinc required</li> 
+    </ul>
+  `, 
+
+  maize: `
+    <h4>🌽 Maize (Corn)</h4> 
+    <ul> 
+      <li><strong>Nitrogen (N):</strong> Urea at knee-high stage</li> 
+      <li><strong>Phosphorus (P):</strong> DAP for root growth</li> 
+      <li><strong>Potassium (K):</strong> MOP for cob development</li> 
+      <li><strong>Complex:</strong> NPK 20:10:10</li> 
+      <li><strong>Micronutrients:</strong> Zinc + Boron</li> 
+    </ul>
+  `, 
+
+  soybean: `
+    <h4>🌱 Soybean</h4> 
+    <ul> 
+      <li><strong>Nitrogen:</strong> Low (nitrogen fixation)</li> 
+      <li><strong>Phosphorus:</strong> DAP/SSP for nodulation</li> 
+      <li><strong>Potassium:</strong> MOP for seed filling</li> 
+      <li><strong>Sulphur:</strong> Gypsum improves protein</li> 
+      <li><strong>Biofertilizers:</strong> Rhizobium</li> 
+    </ul>
+  `
+
 };
 
 function updateFertilizerInfo(crop) {
@@ -258,9 +309,98 @@ function updateFertilizerInfo(crop) {
   container.innerHTML = fertilizerInfo[crop];
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+/* =========================
+   DYNAMIC NUTRIENT TABLE
+========================= */
 
+const nutrientData = {
+  rice: [
+    ["N (Nitrogen)", "<25", "25–50", ">50"],
+    ["P (Phosphorus)", "<10", "10–25", ">25"],
+    ["K (Potassium)", "<110", "110–280", ">280"],
+    ["Ca", "<500", "500–1500", ">1500"],
+    ["Mg", "<60", "60–200", ">200"],
+    ["S", "<5", "5–20", ">20"],
+    ["Zn", "<0.5", "0.5–1.5", ">1.5"],
+    ["Fe", "<2", "2–5", ">5"],
+    ["Cu", "<0.2", "0.2–0.8", ">0.8"],
+    ["Mn", "<1", "1–3", ">3"],
+    ["B", "<0.2", "0.2–0.6", ">0.6"],
+    ["Mo", "<0.05", "0.05–0.2", ">0.2"]
+  ],
+
+  wheat: [
+    ["N", "<20", "20–45", ">45"],
+    ["P", "<8", "8–20", ">20"],
+    ["K", "<100", "100–250", ">250"],
+    ["Ca", "<400", "400–1200", ">1200"],
+    ["Mg", "<50", "50–150", ">150"],
+    ["S", "<4", "4–15", ">15"],
+    ["Zn", "<0.5", "0.5–1.2", ">1.2"],
+    ["Fe", "<2", "2–4", ">4"],
+    ["Cu", "<0.2", "0.2–0.6", ">0.6"],
+    ["Mn", "<1", "1–2.5", ">2.5"],
+    ["B", "<0.2", "0.2–0.5", ">0.5"],
+    ["Mo", "<0.05", "0.05–0.15", ">0.15"]
+  ],
+
+  maize: [
+    ["N", "<25", "25–60", ">60"],
+    ["P", "<10", "10–30", ">30"],
+    ["K", "<120", "120–300", ">300"],
+    ["Ca", "<500", "500–1400", ">1400"],
+    ["Mg", "<60", "60–180", ">180"],
+    ["S", "<5", "5–20", ">20"],
+    ["Zn", "<0.5", "0.5–1.5", ">1.5"],
+    ["Fe", "<2", "2–5", ">5"],
+    ["Cu", "<0.2", "0.2–0.7", ">0.7"],
+    ["Mn", "<1", "1–3", ">3"],
+    ["B", "<0.2", "0.2–0.6", ">0.6"],
+    ["Mo", "<0.05", "0.05–0.2", ">0.2"]
+  ],
+
+  soybean: [
+    ["N", "<15", "15–40", ">40"],
+    ["P", "<10", "10–25", ">25"],
+    ["K", "<100", "100–250", ">250"],
+    ["Ca", "<400", "400–1200", ">1200"],
+    ["Mg", "<50", "50–150", ">150"],
+    ["S", "<5", "5–15", ">15"],
+    ["Zn", "<0.5", "0.5–1.2", ">1.2"],
+    ["Fe", "<2", "2–4", ">4"],
+    ["Cu", "<0.2", "0.2–0.6", ">0.6"],
+    ["Mn", "<1", "1–2.5", ">2.5"],
+    ["B", "<0.2", "0.2–0.5", ">0.5"],
+    ["Mo", "<0.05", "0.05–0.15", ">0.15"]
+  ]
+};
+
+function updateTable(crop) {
+  const tableBody = document.getElementById("csfi-table-body");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = "";
+
+  nutrientData[crop].forEach(row => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${row[0]}</td>
+      <td>${row[1]}</td>
+      <td>${row[2]}</td>
+      <td>${row[3]}</td>
+      <td>mg/kg</td>
+    `;
+
+    tableBody.appendChild(tr);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Fertilizer
   const fertSelect = document.getElementById("fertCropSelect");
+  const cropSelect = document.getElementById("crop");
+
   if (fertSelect) {
     fertSelect.addEventListener("change", function () {
       updateFertilizerInfo(this.value);
@@ -268,10 +408,23 @@ document.addEventListener("DOMContentLoaded", () => {
     updateFertilizerInfo("rice");
   }
 
-  const cropSelect = document.getElementById("crop");
-  if (cropSelect) {
+  if (cropSelect && fertSelect) {
     cropSelect.addEventListener("change", function () {
-      updateFertilizerInfo(this.value.toLowerCase());
+      const value = this.value.toLowerCase();
+      updateFertilizerInfo(value);
+      fertSelect.value = value;
+    });
+  }
+
+  // ✅ Nutrient table FIXED
+  const tableCrop = document.getElementById("cropSelect");
+
+  if (tableCrop) {
+    // Default load
+    updateTable("rice");
+
+    tableCrop.addEventListener("change", function () {
+      updateTable(this.value);
     });
   }
 

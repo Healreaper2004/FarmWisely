@@ -885,15 +885,16 @@ footer {
   margin-bottom: 8px;
 }
 
-#fertilizer-content ul {
-  padding-left: 18px;
-}
-
 #fertilizer-content li {
   margin-bottom: 6px;
   line-height: 1.6;
   color: #333;
 }
+
+#fertilizer-content ul {
+  padding-left: 20px;
+}
+
 
 #fertilizer-content strong {
   color: #1f3a12;
