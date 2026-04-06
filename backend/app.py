@@ -34,7 +34,20 @@ BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")  # ../frontend relative to backend/
 
 # ── Load ML model ───────────────────────────────────────────────────────────
-pipeline = joblib.load(os.path.join(BASE_DIR, "yield_model.pkl"))
+import gdown
+import os
+import joblib
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+MODEL_URL = "https://drive.google.com/uc?id=1qSPkjTPvXbRvGukW_JXgX8fqrNj1pt_l"
+model_path = os.path.join(BASE_DIR, "yield_model.pkl")
+
+if not os.path.exists(model_path):
+    print("Downloading model with gdown...")
+    gdown.download(MODEL_URL, model_path, quiet=False)
+
+pipeline = joblib.load(model_path)
 
 # ── Constants ───────────────────────────────────────────────────────────────
 PESTICIDE_MAP = {"low": 0.5, "medium": 1.5, "high": 2.5}
